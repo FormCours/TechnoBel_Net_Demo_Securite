@@ -105,7 +105,7 @@ namespace Demo_Securite.DAL.Services
         {
             using(IDbCommand cmd = _Connection.CreateCommand())
             {
-                cmd.CommandText = "INSERT INTO [Member] " +
+                cmd.CommandText = "INSERT INTO [Member] (Username, Email, Password, Salt) " +
                                   " OUTPUT inserted.Id " +
                                   " VALUES (@Username, @Email, @Password, @Salt);";
 

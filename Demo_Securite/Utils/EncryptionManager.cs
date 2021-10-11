@@ -17,7 +17,7 @@ namespace Demo_Securite.Utils
 
         private string PreparePassword(string password, string salt)
         {
-            return _Pepper + password + salt;
+            return password + salt + _Pepper;
         }
 
         public string Hash(string password, string salt)
