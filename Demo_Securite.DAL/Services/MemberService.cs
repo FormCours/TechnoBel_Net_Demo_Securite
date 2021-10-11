@@ -142,5 +142,68 @@ namespace Demo_Securite.DAL.Services
         {
             throw new NotImplementedException();
         }
+
+        public MemberCredential GetCredential(string email)
+        {
+            using (IDbCommand cmd = _Connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT Salt, Password " +
+                                  "FROM Member " +
+                                  "WHERE Email = @Email";
+                cmd.CommandType = CommandType.Text;
+
+                IDbDataParameter parameter = CreateDbParameter(cmd, "Email", email);
+                cmd.Parameters.Add(parameter);
+
+                try
+                {
+                    _Connection.Open();
+
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        bool hasRow = reader.Read();
+                        return !hasRow ? null : new MemberCredential
+                        {
+                            Salt = reader["Salt"].ToString(),
+                            HashPassword = Encoding.ASCII.GetString((byte[])reader["Password"])
+                        };
+                    }
+                }
+                finally
+                {
+                    _Connection.Close();
+                }
+            }
+        }
+
+        public Member GetByEmail(string email)
+        {
+            using (IDbCommand cmd = _Connection.CreateCommand())
+            {
+                cmd.CommandText = "SELECT M.Id, M.Username, M.Email, R.Name AS [Role] " +
+                                  "FROM Member M " +
+                                  "     JOIN Role R ON M.RoleId = R.Id " +
+                                  "WHERE M.Email = @email";
+                cmd.CommandType = CommandType.Text;
+
+                IDbDataParameter parameterMail = CreateDbParameter(cmd, "Email", email);
+                cmd.Parameters.Add(parameterMail);
+
+                try
+                {
+                    _Connection.Open();
+
+                    using (IDataReader reader = cmd.ExecuteReader())
+                    {
+                        bool hasRow = reader.Read();
+                        return !hasRow ? null : MapToMember(reader);
+                    }
+                }
+                finally
+                {
+                    _Connection.Close();
+                }
+            }
+        }
     }
 }

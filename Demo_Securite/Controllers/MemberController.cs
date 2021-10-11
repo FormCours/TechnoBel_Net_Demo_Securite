@@ -24,7 +24,7 @@ namespace Demo_Securite.Controllers
         [HttpPost]
         public IActionResult Register(MemberRegister member)
         {
-            if(!ModelState.IsValid)
+            if (!ModelState.IsValid)
             {
                 return BadRequest();
             }
@@ -40,8 +40,38 @@ namespace Demo_Securite.Controllers
                 Salt = salt
             });
 
-            return Ok(new {
-                MemberId = id
+            return Ok(new
+            {
+                Message = $"You account is create with id « {id} »"
+            });
+        }
+
+        [HttpPost]
+        public IActionResult Login(MemberLogin member)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest();
+            }
+
+            DAL.Entities.MemberCredential credential = _MemberService.GetCredential(member.Email);
+            if (credential == null || string.IsNullOrWhiteSpace(credential.Salt))
+            {
+                return new ForbidResult();
+            }
+
+            bool loginValid = EncryptionManager.Verify(member.Password, credential.Salt, credential.HashPassword);
+            if(!loginValid)
+            {
+                return new ForbidResult();
+            }
+
+            // DAL.Entities.Member memberData = _MemberService.GetByEmail(member.Email);
+            //  ↑ A utiliser pour générer le JWT ;)
+
+            return Ok(new
+            {
+                Message= "You account is valid :)"
             });
         }
     }

@@ -10,5 +10,7 @@ namespace Demo_Securite.DAL.Interfaces
     public interface IMemberService: ICrudService<int, Member>
     {
         // Pour ajouter des méthodes (hors Crud)
+        MemberCredential GetCredential(string email);
+        Member GetByEmail(string email);
     }
 }
