@@ -23,13 +23,13 @@ namespace Demo_Securite.Utils
         public string Hash(string password, string salt)
         {
             string pwd = PreparePassword(password, salt);
-            return BCrypt.Net.BCrypt.HashPassword(pwd);
+            return BCrypt.Net.BCrypt.EnhancedHashPassword(pwd, BCrypt.Net.HashType.SHA512);
         }
 
         public bool Verify(string password, string salt, string passwordHash)
         {
             string pwd = PreparePassword(password, salt);
-            return BCrypt.Net.BCrypt.Verify(pwd, passwordHash);
+            return BCrypt.Net.BCrypt.EnhancedVerify(pwd, passwordHash, BCrypt.Net.HashType.SHA512);
         }
 
         public string GenerateSalt()
