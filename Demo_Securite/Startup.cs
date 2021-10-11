@@ -1,5 +1,6 @@
 using Demo_Securite.DAL.Interfaces;
 using Demo_Securite.DAL.Services;
+using Demo_Securite.Utils;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -32,8 +33,9 @@ namespace Demo_Securite
         {
             services.AddTransient<IDbConnection, SqlConnection>((s) =>
             {
-                return new SqlConnection(Configuration.GetConnectionString("default"));
+                return new SqlConnection(Configuration.GetConnectionString("Default"));
             });
+            services.AddScoped<EncryptionManager>();
             services.AddScoped<IMemberService, MemberService>();
 
             services.AddControllers();

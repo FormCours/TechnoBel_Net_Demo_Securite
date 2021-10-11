@@ -1,30 +1,38 @@
-﻿using System;
+﻿using Microsoft.Extensions.Configuration;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Threading.Tasks;
 
 namespace Demo_Securite.Utils
 {
-    public static class EncryptionManager
+    public class EncryptionManager
     {
-        private static string PreparePassword(string password, string salt)
+        private string _Pepper { get; set; }
+
+        public EncryptionManager(IConfiguration config)
         {
-            return password + salt;
+            _Pepper = config.GetValue<string>("EncryptionPepper");
         }
 
-        public static string Hash(string password, string salt)
+        private string PreparePassword(string password, string salt)
+        {
+            return _Pepper + password + salt;
+        }
+
+        public string Hash(string password, string salt)
         {
             string pwd = PreparePassword(password, salt);
             return BCrypt.Net.BCrypt.HashPassword(pwd);
         }
 
-        public static bool Verify(string password, string salt, string passwordHash)
+        public bool Verify(string password, string salt, string passwordHash)
         {
             string pwd = PreparePassword(password, salt);
             return BCrypt.Net.BCrypt.Verify(pwd, passwordHash);
         }
 
-        public static string GenerateSalt()
+        public string GenerateSalt()
         {
             return BCrypt.Net.BCrypt.GenerateSalt();
         }

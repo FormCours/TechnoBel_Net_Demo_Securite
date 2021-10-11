@@ -15,13 +15,16 @@ namespace Demo_Securite.Controllers
     public class MemberController : ControllerBase
     {
         private IMemberService _MemberService;
+        private EncryptionManager _EncryptionManager;
 
-        public MemberController(IMemberService memberService)
+        public MemberController(IMemberService memberService, EncryptionManager encryptionManager)
         {
             _MemberService = memberService;
+            _EncryptionManager = encryptionManager;
         }
 
         [HttpPost]
+        [Route("Register")]
         public IActionResult Register(MemberRegister member)
         {
             if (!ModelState.IsValid)
@@ -29,8 +32,8 @@ namespace Demo_Securite.Controllers
                 return BadRequest();
             }
 
-            string salt = EncryptionManager.GenerateSalt();
-            string passwordHash = EncryptionManager.Hash(member.Password, salt);
+            string salt = _EncryptionManager.GenerateSalt();
+            string passwordHash = _EncryptionManager.Hash(member.Password, salt);
 
             int id = _MemberService.Create(new DAL.Entities.Member
             {
@@ -47,6 +50,7 @@ namespace Demo_Securite.Controllers
         }
 
         [HttpPost]
+        [Route("Login")]
         public IActionResult Login(MemberLogin member)
         {
             if (!ModelState.IsValid)
@@ -60,7 +64,7 @@ namespace Demo_Securite.Controllers
                 return new ForbidResult();
             }
 
-            bool loginValid = EncryptionManager.Verify(member.Password, credential.Salt, credential.HashPassword);
+            bool loginValid = _EncryptionManager.Verify(member.Password, credential.Salt, credential.HashPassword);
             if(!loginValid)
             {
                 return new ForbidResult();
