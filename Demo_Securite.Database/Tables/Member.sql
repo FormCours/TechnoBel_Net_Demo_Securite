@@ -1,0 +1,13 @@
+﻿CREATE TABLE [dbo].[Member]
+(
+	[Id] INT IDENTITY NOT NULL,
+	[Username] NVARCHAR(50) NOT NULL,
+	[Email] NVARCHAR(250) NOT NULL,
+	[Password] VARBINARY(8000) NOT NULL,
+	[Salt] VARCHAR(500) NOT NULL,
+	[RoleId] INT DEFAULT 0 NOT NULL,
+	CONSTRAINT PK_Member PRIMARY KEY ([Id]),
+	CONSTRAINT UK_Member_Username UNIQUE ([Username]),
+	CONSTRAINT UK_Member_Email UNIQUE ([Email]),
+	CONSTRAINT FK_Member_Role FOREIGN KEY ([RoleId]) REFERENCES [Role]([Id])
+)
