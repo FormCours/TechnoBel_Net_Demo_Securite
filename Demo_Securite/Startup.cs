@@ -1,3 +1,5 @@
+using Demo_Securite.DAL.Interfaces;
+using Demo_Securite.DAL.Services;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.HttpsPolicy;
@@ -9,6 +11,8 @@ using Microsoft.Extensions.Logging;
 using Microsoft.OpenApi.Models;
 using System;
 using System.Collections.Generic;
+using System.Data;
+using System.Data.SqlClient;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -26,6 +30,11 @@ namespace Demo_Securite
         // This method gets called by the runtime. Use this method to add services to the container.
         public void ConfigureServices(IServiceCollection services)
         {
+            services.AddTransient<IDbConnection, SqlConnection>((s) =>
+            {
+                return new SqlConnection(Configuration.GetConnectionString("default"));
+            });
+            services.AddScoped<IMemberService, MemberService>();
 
             services.AddControllers();
             services.AddSwaggerGen(c =>
